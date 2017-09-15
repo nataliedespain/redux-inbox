@@ -139,6 +139,57 @@ class App extends Component {
     }
   }
 
+  markAsRead = () => {
+    let selected = this.state.messages.filter(message => message.selected);
+    for (let message of selected) {
+      message.read = true;
+    }
+    this.setState({
+      messages: messages
+    })
+  }
+
+  markAsUnread = () => {
+    let selected = this.state.messages.filter(message => message.selected);
+    for (let message of selected) {
+      message.read = false;
+    }
+    this.setState({
+      messages: messages
+    })
+  }
+
+  addLabel = (val) => {
+    let selected = this.state.messages.filter(message => message.selected);
+    for (let message of selected) {
+      if (!message.labels.includes(val)) message.labels = message.labels.concat(val);
+      this.setState({
+        messages: messages
+      })
+    }
+  }
+
+  removeLabel = (val) => {
+    let selected = this.state.messages.filter(message => message.selected);
+    for (let message of selected) {
+      message.labels.splice(message.labels.indexOf(val), 1);
+      message.labels = message.labels;
+      this.setState({
+        messages: messages
+      })
+    }
+  }
+
+  deleteMessage = () => {
+    let selected = this.state.messages.filter(message => message.selected);
+    for (let message of selected) {
+      this.state.messages.splice(this.state.messages.indexOf(message), 1);
+    }
+    this.setState({
+      messages: messages
+    })
+  }
+
   unreadCount = () => {
     return this.state.messages.reduce((acc, message) => {
       if (message.read === false) acc += 1;
@@ -151,9 +202,14 @@ class App extends Component {
       <div>
         <Navbar />
         <Toolbar
-          selectBoxChange = { this.selectBoxChange }
-          selectBoxClick = { this.selectBoxClick }
-          unreadCount = { this.unreadCount } />
+          selectBoxChange={ this.selectBoxChange }
+          selectBoxClick={ this.selectBoxClick }
+          markAsRead={ this.markAsRead }
+          markAsUnread={ this.markAsUnread }
+          addLabel={ this.addLabel }
+          removeLabel={ this.removeLabel }
+          deleteMessage={ this.deleteMessage }
+          unreadCount={ this.unreadCount } />
         <Messages
           messages={ this.state.messages }
           setMessageClass={ this.setMessageClass }
