@@ -1,23 +1,24 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
-const Toolbar = ({ selectBoxChange, selectBoxClick, markAsRead, markAsUnread, addLabel, removeLabel, deleteMessage, unreadCount }) => (
+const Toolbar = ({ bulkSelect, bulkMarkRead, bulkMarkUnread, addLabel, removeLabel, deleteMessage, state }) => (
   <div className="row toolbar">
     <div className="container">
       <div className="col-md-12">
         <p className="pull-right">
-          <span className="badge badge">{ unreadCount() }</span>
+          <span className="badge badge">{ unreadCount(state) }</span>
           unread messages
         </p>
 
-        <button className="btn btn-default" onClick={ e => selectBoxClick() }>
-          <i className={ selectBoxChange() }></i>
+        <button className="btn btn-default" onClick={ e => bulkSelect() }>
+          <i className={ selectBoxChange(state) }></i>
         </button>
 
-        <button className="btn btn-default" onClick={ e => markAsRead() }>
+        <button className="btn btn-default" onClick={ e => bulkMarkRead() }>
           Mark As Read
         </button>
 
-        <button className="btn btn-default" onClick={ e => markAsUnread() }>
+        <button className="btn btn-default" onClick={ e => bulkMarkUnread() }>
           Mark As Unread
         </button>
 
@@ -43,4 +44,56 @@ const Toolbar = ({ selectBoxChange, selectBoxClick, markAsRead, markAsUnread, ad
   </div>
 )
 
-export default Toolbar
+const unreadCount = (state) => {
+  return state.reduce((acc, message) => {
+    if (message.read === false) acc += 1;
+    return acc;
+  }, 0)
+}
+
+const selectBoxChange = (state) => {
+  let all = state.every(message => message.selected);
+  let some = state.some(message => message.selected);
+  if (all) {
+    return "fa fa-check-square-o";
+  } else if (some) {
+    return "fa fa-minus-square-o";
+  } else {
+    return "fa fa-square-o";
+  }
+}
+
+const mapStateToProps = (state) => ({
+  state
+})
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    bulkSelect: () => dispatch({
+      type: 'BULK_SELECT'
+    }),
+    bulkMarkRead: () => dispatch({
+      type: 'BULK_MARK_READ'
+    }),
+    bulkMarkUnread: () => dispatch({
+      type: 'BULK_MARK_UNREAD'
+    }),
+    addLabel: (val) => dispatch({
+      type: 'ADD_LABEL',
+      val
+    }),
+    removeLabel: (val) => dispatch({
+      type: 'REMOVE_LABEL',
+      val
+    }),
+    deleteMessage: (val) => dispatch({
+      type: 'DELETE_MESSAGE',
+      val
+    })
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Toolbar)

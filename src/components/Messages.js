@@ -1,20 +1,45 @@
 import React from 'react';
 import Message from './Message';
+import { connect } from 'react-redux';
 
-const Messages = ({ messages, setMessageClass, markRead, markStar , markSelect}) => (
+const Messages = ({ markRead, setMessageClass, toggleStar, toggleSelect, state }) => (
   <div className="row">
     <div className="container">
-      { messages.map((message, i) =>
+      { state.map((message, i) =>
         <Message
           key={ i }
-          setMessageClass={ setMessageClass }
           markRead={ markRead }
-          markStar={ markStar }
-          markSelect={ markSelect }
+          setMessageClass={ setMessageClass }
+          toggleStar={ toggleStar }
+          toggleSelect={ toggleSelect }
           message={ message } />
       ) }
     </div>
   </div>
 )
 
-export default Messages
+const mapStateToProps = (state) => ({
+  state
+})
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    markRead: (id) => dispatch({
+      type: 'MARK_READ',
+      id
+    }),
+    toggleStar: (id) => dispatch({
+      type: 'TOGGLE_STAR',
+      id
+    }),
+    toggleSelect: (id) => dispatch({
+      type: 'TOGGLE_SELECT',
+      id
+    })
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Messages)
